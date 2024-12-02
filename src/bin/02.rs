@@ -29,13 +29,13 @@ pub fn is_safe(report: &[i32]) -> bool {
     (only_decreasing ^ only_increasing) && distance_ok
 }
 
-pub fn is_safe_with_removal(report: &Vec<i32>) -> bool {
+pub fn is_safe_with_removal(report: &[i32]) -> bool {
     if is_safe(report) {
         return true;
     }
 
     for level_index in 0..report.len() {
-        let mut report_clone = report.clone();
+        let mut report_clone = report.to_vec();
         report_clone.remove(level_index);
 
         if is_safe(&report_clone) {
