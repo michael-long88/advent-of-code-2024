@@ -24,7 +24,7 @@ impl From<char> for Letter {
 pub struct ElfLetter {
     pub row: usize,
     pub column: usize,
-    pub letter: Letter
+    pub letter: Letter,
 }
 
 impl ElfLetter {
@@ -39,7 +39,7 @@ impl ElfLetter {
     pub fn is_part_one_valid_distance(&self, next: &ElfLetter, x_letter: &ElfLetter) -> bool {
         if next.letter == Letter::A || next.letter == Letter::S {
             let (first_direction, second_direction) = self.get_directions(x_letter, next);
-    
+
             if first_direction != second_direction {
                 return false;
             }
@@ -53,7 +53,7 @@ impl ElfLetter {
     pub fn is_part_two_valid_distance(&self, next: &ElfLetter, m_letter: &ElfLetter) -> bool {
         if next.letter == Letter::S {
             let (first_direction, second_direction) = self.get_directions(m_letter, next);
-    
+
             if first_direction != second_direction {
                 return false;
             }
@@ -65,10 +65,19 @@ impl ElfLetter {
     }
 
     fn get_directions(&self, first: &ElfLetter, next: &ElfLetter) -> (isize, isize) {
-        let first_direction = (first.row as isize - self.row as isize, first.column as isize - self.column as isize);
-        let next_direction = (next.row as isize - self.row as isize, next.column as isize - self.column as isize);
+        let first_direction = (
+            first.row as isize - self.row as isize,
+            first.column as isize - self.column as isize,
+        );
+        let next_direction = (
+            next.row as isize - self.row as isize,
+            next.column as isize - self.column as isize,
+        );
 
-        (first_direction.0 * next_direction.1, first_direction.1 * next_direction.0)
+        (
+            first_direction.0 * next_direction.1,
+            first_direction.1 * next_direction.0,
+        )
     }
 
     fn get_distances(&self, next: &ElfLetter) -> (usize, usize) {
@@ -82,7 +91,7 @@ impl ElfLetter {
         } else {
             next.column - self.column
         };
-            
+
         (row_distance, column_distance)
     }
 }
@@ -93,8 +102,7 @@ pub fn parse(input: &str) -> Vec<ElfLetter> {
         .filter(|row| !row.is_empty())
         .enumerate()
         .flat_map(|(row_index, row)| {
-            row
-                .split("")
+            row.split("")
                 .skip(1)
                 .take(row.len())
                 .enumerate()
@@ -106,36 +114,46 @@ pub fn parse(input: &str) -> Vec<ElfLetter> {
         })
         .collect();
 
-        elf_letters
+    elf_letters
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
     let elf_letters = parse(input);
 
-    let x_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::X).collect();
-    let m_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::M).collect();
-    let a_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::A).collect();
-    let s_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::S).collect();
+    let x_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::X)
+        .collect();
+    let m_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::M)
+        .collect();
+    let a_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::A)
+        .collect();
+    let s_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::S)
+        .collect();
 
     let mut valid_word_counts = 0;
 
-    x_letters
-        .iter()
-        .for_each(|elf_letter| {
-            for m_letter in m_letters.iter() {
-                if elf_letter.is_part_one_valid_distance(m_letter, elf_letter) {
-                    for a_letter in a_letters.iter() {
-                        if m_letter.is_part_one_valid_distance(a_letter, elf_letter) {
-                            for s_letter in s_letters.iter() {
-                                if a_letter.is_part_one_valid_distance(s_letter, elf_letter) {
-                                    valid_word_counts += 1
-                                }
+    x_letters.iter().for_each(|elf_letter| {
+        for m_letter in m_letters.iter() {
+            if elf_letter.is_part_one_valid_distance(m_letter, elf_letter) {
+                for a_letter in a_letters.iter() {
+                    if m_letter.is_part_one_valid_distance(a_letter, elf_letter) {
+                        for s_letter in s_letters.iter() {
+                            if a_letter.is_part_one_valid_distance(s_letter, elf_letter) {
+                                valid_word_counts += 1
                             }
                         }
                     }
                 }
             }
-        });
+        }
+    });
 
     Some(valid_word_counts as u32)
 }
@@ -143,25 +161,32 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let elf_letters = parse(input);
 
-    let m_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::M).collect();
-    let a_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::A).collect();
-    let s_letters: Vec<&ElfLetter> = elf_letters.iter().filter(|elf_letter| elf_letter.letter == Letter::S).collect();
+    let m_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::M)
+        .collect();
+    let a_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::A)
+        .collect();
+    let s_letters: Vec<&ElfLetter> = elf_letters
+        .iter()
+        .filter(|elf_letter| elf_letter.letter == Letter::S)
+        .collect();
 
     let mut diagonal_words = vec![];
 
-    m_letters
-        .iter()
-        .for_each(|elf_letter| {
-            for a_letter in a_letters.iter() {
-                if elf_letter.is_part_two_valid_distance(a_letter, elf_letter) {
-                    for s_letter in s_letters.iter() {
-                        if a_letter.is_part_two_valid_distance(s_letter, elf_letter) {
-                            diagonal_words.push([elf_letter, a_letter, s_letter]);
-                        }
+    m_letters.iter().for_each(|elf_letter| {
+        for a_letter in a_letters.iter() {
+            if elf_letter.is_part_two_valid_distance(a_letter, elf_letter) {
+                for s_letter in s_letters.iter() {
+                    if a_letter.is_part_two_valid_distance(s_letter, elf_letter) {
+                        diagonal_words.push([elf_letter, a_letter, s_letter]);
                     }
                 }
             }
-        });
+        }
+    });
 
     let mut total_num_xmas = 0;
 
